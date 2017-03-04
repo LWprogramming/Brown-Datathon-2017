@@ -1,5 +1,6 @@
+import ipdb
 import numpy as np
-import pandas
+import pandas as pd
 import os
 from collections import Counter
 
@@ -15,10 +16,12 @@ def clean_data():
 	'''
 	clean the data to do machine learning.
 	'''
-	data = pandas.read_csv(get_data_path()).as_matrix()
+	data = pd.read_csv(get_data_path()).as_matrix()
+	num_examples = data.shape[0]
+	# ipdb.set_trace()  ######### Break Point ###########
 
 	# save the columns to be removed. p_traffic_channel_column and operating_system_column have non-numerical data so we will rearrange these things.
-	labels_column = np.reshape(data[:, 16], (1000000, 1))
+	labels_column = data[:, 16]
 	p_traffic_channel_column = data[:, 5]
 	operating_system_column = data[:, 10]
 
@@ -31,12 +34,14 @@ def clean_data():
 	data = np.concatenate((data, p_traffic_channel_matrix, operating_system_matrix), 1)
 
 	# set leftmost column to the labels.
-	data = np.concatenate((labels_column, data), 1)
+	data = np.concatenate((np.reshape(labels_column, (num_examples, 1)), data), 1)
 
 	# remove user id and the date.
 	# TODO: try to incorporate the date somehow as a feature.
-	data = np.concatenate((data[:, 0], data[:, 3:]))
-	return data
+	data = np.concatenate((np.reshape(data[:, 0], (num_examples, 1)), data[:, 3:]), 1)
+
+	dff = pd.DataFrame(data)
+	return dff.fillna(dff.mean())
 
 def map_to_matrix(iterable):
 	'''
@@ -83,5 +88,6 @@ def map_to_matrix(iterable):
 
 if __name__ == '__main__':
 	data = clean_data()
-	# np.save('cleaned_data', data)
+	np.save('cleaned_data', data)
 	# print(np.load('cleaned_data.npy'))
+	# print(data.as_matrix()[0, :])
