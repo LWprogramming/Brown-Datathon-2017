@@ -22,7 +22,11 @@ def clean_data():
 	print(list(c.most_common()))
 	return data
 
-def map_to_matrix():
+def count_iterable(i):
+    return sum(1 for e in i)
+
+def map_to_matrix(iterable):
+
 	'''
 	consumes an iterable and use collections.Counter to return a matrix of numbers according to the class.
 
@@ -35,9 +39,11 @@ def map_to_matrix():
 	'linux',
 	'linux']
 
-	return: an n x m matrix, n being the length of the original iterable and m being the number of unique classes--in this example, n = 6 and m = 3.
+	return: an n x m matrix, n being the length of the original iterable and m
+	being the number of unique classes--in this example, n = 6 and m = 3.
 
-	Let the ith row, jth column element be 1 if the ith element in the input belongs to class j. Otherwise make everything 0.
+	Let the ith row, jth column element be 1 if the ith element in the input
+	belongs to class j. Otherwise make everything 0.
 
 	In this case, let class 0 = linux, class 1 = mac, class 2 = windows.
 
@@ -50,6 +56,23 @@ def map_to_matrix():
 	1	0	0
 	1	0	0
 	'''
+	iterator = iter(iterable)
+	c = Counter(iterable)
+	k = list(c.keys())
+	n = len(iterable)
+	m = len(c)
+	matrix = np.zeros([n,m])
+
+	for i in range(0, n) :
+		current_item = next(iterator)
+		for j in range(0, m) :
+			if current_item == k[j] :
+				matrix[i][j] = 1
+
+	return matrix
+
+ex = ['windows','mac','linux','mac','linux', 'linux']
+print(map_to_matrix(ex))
 
 if __name__ == '__main__':
 	data = clean_data()
