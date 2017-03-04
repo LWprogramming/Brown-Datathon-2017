@@ -17,13 +17,20 @@ def clean_data():
 	'''
 	# print(get_data_path())
 	data = pandas.read_csv(get_data_path()).as_matrix()
-	# operating_system_column = data[:, 10]
-	# c = Counter(operating_system_column)
-	# print(list(c.most_common()))
+
+	# these two columns have non-numerical features, so we will use map_to_matrix on them.
+	p_traffic_channel_column = data[:, 5]
+	operating_system_column = data[:, 10]
+	p_traffic_channel_matrix = map_to_matrix(p_traffic_channel_column)
+	operating_system_matrix = map_to_matrix(operating_system_column)
+	data = np.concatenate((data, p_traffic_channel_matrix, map_to_matrix), 1)
+
+	# now move labels to the leftmost column.
+	labels_column = data[:, 16]
+	data = np.concatenate((labels_column, np.delete(data, 16, 1)))
 	return data
 
 def map_to_matrix(iterable):
-
 	'''
 	consumes an iterable and use collections.Counter to return a matrix of numbers according to the class.
 
@@ -68,10 +75,4 @@ def map_to_matrix(iterable):
 
 if __name__ == '__main__':
 	data = clean_data()
-	operating_system_column = data[:, 10]
-	x = map_to_matrix(operating_system_column)
-	print(sum(x)[0])
-	# print(sum(sum(map_to_matrix(operating_system_column))))
-
-
-	# print(data[0, 1]) # should be 2017-01-10
+	np.savetxt('cleaned_data.csv', data, delimiter=',')
