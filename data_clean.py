@@ -15,7 +15,6 @@ def clean_data():
 	'''
 	clean the data to do machine learning.
 	'''
-	# print(get_data_path())
 	data = pandas.read_csv(get_data_path()).as_matrix()
 
 	# save the columns to be removed. p_traffic_channel_column and operating_system_column have non-numerical data so we will rearrange these things.
@@ -31,9 +30,12 @@ def clean_data():
 	data = np.delete(data, [5, 10, 16], 1)
 	data = np.concatenate((data, p_traffic_channel_matrix, operating_system_matrix), 1)
 
-	# print(labels_column.shape)
-	# print(np.delete(data, 16, 1).shape)
+	# set leftmost column to the labels.
 	data = np.concatenate((labels_column, data), 1)
+
+	# remove user id and the date.
+	# TODO: try to incorporate the date somehow as a feature.
+	data = np.concatenate((data[:, 0], data[:, 3:]))
 	return data
 
 def map_to_matrix(iterable):
@@ -81,7 +83,5 @@ def map_to_matrix(iterable):
 
 if __name__ == '__main__':
 	data = clean_data()
-	data0 = data[:, 0]
-	print(data0.sum())
-	np.save('cleaned_data', data[0, :])
-	print(np.load('cleaned_data.npy'))
+	# np.save('cleaned_data', data)
+	# print(np.load('cleaned_data.npy'))
