@@ -18,21 +18,22 @@ def clean_data():
 	# print(get_data_path())
 	data = pandas.read_csv(get_data_path()).as_matrix()
 
-	# these two columns have non-numerical features, so we will use map_to_matrix on them.
+	# save the columns to be removed. p_traffic_channel_column and operating_system_column have non-numerical data so we will rearrange these things.
+	labels_column = np.reshape(data[:, 16], (1000000, 1))
 	p_traffic_channel_column = data[:, 5]
 	operating_system_column = data[:, 10]
+
+	# sparse matrices
 	p_traffic_channel_matrix = map_to_matrix(p_traffic_channel_column)
 	operating_system_matrix = map_to_matrix(operating_system_column)
-	# print(p_traffic_channel_matrix.shape)
-	# print(operating_system_matrix.shape)
-	# print(data.shape)
+
+	# remove non-numerical data
+	data = np.delete(data, [5, 10, 16], 1)
 	data = np.concatenate((data, p_traffic_channel_matrix, operating_system_matrix), 1)
 
-	# now move labels to the leftmost column.
-	labels_column = np.reshape(data[:, 16], (1000000, 1))
 	# print(labels_column.shape)
 	# print(np.delete(data, 16, 1).shape)
-	data = np.concatenate((labels_column, np.delete(data, 16, 1)), 1)
+	data = np.concatenate((labels_column, data), 1)
 	return data
 
 def map_to_matrix(iterable):
@@ -80,4 +81,7 @@ def map_to_matrix(iterable):
 
 if __name__ == '__main__':
 	data = clean_data()
-	np.save('cleaned_data', data[0, :], delimiter=',')
+	data0 = data[:, 0]
+	print(data0.sum())
+	np.save('cleaned_data', data[0, :])
+	print(np.load('cleaned_data.npy'))
