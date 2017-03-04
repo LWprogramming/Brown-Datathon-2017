@@ -23,11 +23,16 @@ def clean_data():
 	operating_system_column = data[:, 10]
 	p_traffic_channel_matrix = map_to_matrix(p_traffic_channel_column)
 	operating_system_matrix = map_to_matrix(operating_system_column)
-	data = np.concatenate((data, p_traffic_channel_matrix, map_to_matrix), 1)
+	# print(p_traffic_channel_matrix.shape)
+	# print(operating_system_matrix.shape)
+	# print(data.shape)
+	data = np.concatenate((data, p_traffic_channel_matrix, operating_system_matrix), 1)
 
 	# now move labels to the leftmost column.
-	labels_column = data[:, 16]
-	data = np.concatenate((labels_column, np.delete(data, 16, 1)))
+	labels_column = np.reshape(data[:, 16], (1000000, 1))
+	# print(labels_column.shape)
+	# print(np.delete(data, 16, 1).shape)
+	data = np.concatenate((labels_column, np.delete(data, 16, 1)), 1)
 	return data
 
 def map_to_matrix(iterable):
@@ -75,4 +80,4 @@ def map_to_matrix(iterable):
 
 if __name__ == '__main__':
 	data = clean_data()
-	np.savetxt('cleaned_data.csv', data, delimiter=',')
+	np.save('cleaned_data', data[0, :], delimiter=',')
