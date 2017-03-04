@@ -1,3 +1,7 @@
+# numpy file for cleaned data
+*.npy
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
