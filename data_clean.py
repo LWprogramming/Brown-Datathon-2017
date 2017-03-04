@@ -17,13 +17,10 @@ def clean_data():
 	'''
 	# print(get_data_path())
 	data = pandas.read_csv(get_data_path()).as_matrix()
-	operating_system_column = data[:, 10]
-	c = Counter(operating_system_column)
-	print(list(c.most_common()))
+	# operating_system_column = data[:, 10]
+	# c = Counter(operating_system_column)
+	# print(list(c.most_common()))
 	return data
-
-def count_iterable(i):
-    return sum(1 for e in i)
 
 def map_to_matrix(iterable):
 
@@ -56,10 +53,7 @@ def map_to_matrix(iterable):
 	1	0	0
 	1	0	0
 	'''
-	# iterator = iter(iterable)
-	# c = Counter(iterable)
 	c = Counter(iterable)
-	# k = list(c.keys())
 	n = len(iterable)
 	m = len(c)
 	k_list = list(c.most_common()) # key-frequency list
