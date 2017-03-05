@@ -13,11 +13,20 @@ def get_data_path():
 	data_path = parent_path + "/TripAdvisorChallenge/datathon_tadata.csv"
 	return data_path
 
+def date_counter(dates):
+	'''
+	determine what dates we're dealing with; dates is a vector
+	'''
+	c = Counter(dates)
+	lst = list(c.most_common())
+	print(lst)
+
 def clean_data():
 	'''
 	clean the data to do machine learning.
 	'''
 	data = pd.read_csv(get_data_path()).as_matrix()
+	date_counter(data[:,1])
 	num_examples = data.shape[0]
 	# ipdb.set_trace()  ######### Break Point ###########
 
