@@ -20,7 +20,7 @@ def common_elements_counter(vector):
 	'''
 	c = Counter(vector)
 	lst = list(c.most_common())
-	print(lst)
+	# print(lst)
 	return lst
 
 def clean_data():
@@ -33,7 +33,7 @@ def clean_data():
 	# ipdb.set_trace()  ######### Break Point ###########
 
 	# save the columns to be removed. p_traffic_channel_column and operating_system_column have non-numerical data so we will rearrange these things.
-	labels_column = data[:, 16]
+	labels = np.reshape(data[:, 16], (num_examples, 1))
 	p_traffic_channel_column = data[:, 5]
 	operating_system_column = data[:, 10]
 
@@ -46,16 +46,15 @@ def clean_data():
 	data = np.concatenate((data, p_traffic_channel_matrix, operating_system_matrix), 1)
 
 	# set leftmost column to the labels.
-	data = np.concatenate((np.reshape(labels_column, (num_examples, 1)), data), 1)
+	data = np.concatenate((labels, data), 1)
 
 	# remove user id; add some features based on the level of activity in the
 	# past few days.
-	look_back = 5 # how many days back to consider
-	labels = np.reshape(data[:, 0], (num_examples, 1))
-	dates = data[:, 2]
+	averages = daily_average(data, labels)
 	other_features = data[:, 3:]
+	dates_as_numbers = np.reshape(np.array([date_to_number(x) for x in data[:, 2]]), (num_examples, 1))
 
-	data = np.concatenate(labels, other_features), 1)
+	data = np.concatenate((labels, dates_as_numbers, other_features), 1)
 
 	# interpolate
 	dff = pd.DataFrame(data)
@@ -68,7 +67,35 @@ def clean_data():
 
 def date_to_number(date_string):
 	'''maps a date to a number, mapping a date to the number of days between itself at Nov. 1, 2016.'''
-	return (date_string - date(2016, 11, 1)).days
+	return (datetime.strptime(date_string, '%Y-%m-%d') - datetime(2016, 11, 1, 0,  0)).days
+
+def daily_average(data, labels):
+	'''Write a function called daily_average that takes in the dataset and for each date, calculates the daily average.
+	Define the daily average as:
+	Number of users who bought something on this day / total number of users this day
+	Then return a vector with the averages, where the first element of the vector is for 11/1, then the second element is for 11/2/2016, ...etc all the way to 1/17/2017.
+	'''
+	date_number_frequency_tuples = [(date_to_number(day), frequency) for (day, frequency) in common_elements_counter(data[:, 2])] # take the list of date-frequency tuples and converts each date string to a number.
+	averages = np.zeros(len(date_number_frequency_tuples))
+	date_totals = get_date_totals(data, labels)
+	for (day, frequency) in date_number_frequency_tuples:
+		averages[day] = date_totals[day] / frequency
+	return averages
+
+def get_date_totals(data, labels, num_unique_days=78):
+	'''returns a vector with the total number of buyers for each day.
+	dates_as_numbers is a vector
+	labels is a vector of same length'''
+	dates_as_numbers = np.array([date_to_number(x) for x in data[:, 2]])
+	sums = np.zeros(num_unique_days)
+	for index, label in enumerate(labels):
+		if label == 0:
+			pass
+		elif label == 1:
+			sums[dates_as_numbers[index]] += 1
+		else:
+			print('THIS LABEL IS NOT BINARY')
+	return sums
 
 def map_to_matrix(iterable):
 	'''
@@ -100,9 +127,9 @@ def map_to_matrix(iterable):
 	1	0	0
 	1	0	0
 	'''
-	n = len(iterable)
-	m = len(c)
 	k_list = common_elements_counter(iterable) # key-frequency list
+	n = len(iterable)
+	m = len(k_list)
 	k = [x for (x, y) in k_list] # list of keys
 	matrix = np.zeros([n,m])
 
