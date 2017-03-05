@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import os
 from collections import Counter
+from sklearn.preprocessing import MinMaxScaler
 
 def get_data_path():
 	'''
@@ -40,8 +41,14 @@ def clean_data():
 	# TODO: try to incorporate the date somehow as a feature.
 	data = np.concatenate((np.reshape(data[:, 0], (num_examples, 1)), data[:, 3:]), 1)
 
+	# interpolate
 	dff = pd.DataFrame(data)
-	return dff.fillna(dff.mean())
+	dff = dff.fillna(dff.mean())
+
+	# normalize data set_trace
+	scaler = MinMaxScaler(feature_range=(0, 1))
+	dff = scaler.fit_transform(dff)
+	return dff
 
 def map_to_matrix(iterable):
 	'''
