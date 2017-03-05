@@ -35,19 +35,19 @@ def print_training_metrics(clf, features, labels):
     assuming clf is already trained.
     '''
     predictions = clf.predict(features)
-    print('accuracy score: ' + str(accuracy_score(labels, predictions)))
-    # print('precision score: ' + str(precision_score(labels, predictions)))
-    # print('recall score: ' + str(recall_score(labels, predictions)))
-    # print('F1 score: ' + str(f1_score(labels, predictions)))
+    print('accuracy score: ' + '%.3f' % accuracy_score(labels, predictions))
+    # print('precision score: ' + '%.3f' % precision_score(labels, predictions))
+    # print('recall score: ' + '%.3f' % recall_score(labels, predictions))
+    # print('F1 score: ' + '%.3f' % f1_score(labels, predictions))
 
 def print_cv_metrics(clf, features, labels):
     '''
     cv score
     '''
-    print('accuracy_score: ' + str(np.mean(cross_val_score(clf, features, labels, cv=5, scoring='accuracy'))))
-    # print('precision score: ' + str(np.mean(cross_val_score(clf, features, labels, cv=5, scoring='precision_score'))))
-    # print('recall score: ' + str(np.mean(cross_val_score(clf, features, labels, cv=5, scoring='recall_score'))))
-    # print('F1 score: ' + str(np.mean(cross_val_score(clf, features, labels, cv=5, scoring='f1_score'))))
+    print('accuracy_score: ' + '%.3f' % np.mean(cross_val_score(clf, features, labels, cv=5, scoring='accuracy')))
+    # print('precision score: ' + '%.3f' % np.mean(cross_val_score(clf, features, labels, cv=5, scoring='precision')))
+    # print('recall score: ' + '%.3f' % np.mean(cross_val_score(clf, features, labels, cv=5, scoring='recall')))
+    # print('F1 score: ' + '%.3f' % np.mean(cross_val_score(clf, features, labels, cv=5, scoring='f1')))
 
 if __name__ == '__main__':
     data = np.load('cleaned_data.npy')
