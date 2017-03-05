@@ -13,13 +13,14 @@ def get_data_path():
 	data_path = parent_path + "/TripAdvisorChallenge/datathon_tadata.csv"
 	return data_path
 
-def date_counter(dates):
+def common_elements_counter(vector):
 	'''
 	determine what dates we're dealing with; dates is a vector
 	'''
-	c = Counter(dates)
+	c = Counter(vector)
 	lst = list(c.most_common())
 	print(lst)
+	return lst
 
 def clean_data():
 	'''
@@ -89,10 +90,9 @@ def map_to_matrix(iterable):
 	1	0	0
 	1	0	0
 	'''
-	c = Counter(iterable)
 	n = len(iterable)
 	m = len(c)
-	k_list = list(c.most_common()) # key-frequency list
+	k_list = common_elements_counter(iterable) # key-frequency list
 	k = [x for (x, y) in k_list] # list of keys
 	matrix = np.zeros([n,m])
 
