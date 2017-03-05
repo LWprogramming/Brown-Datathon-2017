@@ -1,4 +1,4 @@
-import ipdb
+# import ipdb
 import numpy as np
 import pandas as pd
 import os
@@ -50,11 +50,11 @@ def clean_data():
 
 	# remove user id; add some features based on the level of activity in the
 	# past few days.
-	averages = daily_average(data, labels)
+	day_averages = daily_average(data, labels)
 	other_features = data[:, 3:]
-	dates_as_numbers = np.reshape(np.array([date_to_number(x) for x in data[:, 2]]), (num_examples, 1))
+	dates_as_numbers = np.array([date_to_number(x) for x in data[:, 2]])
 
-	data = np.concatenate((labels, dates_as_numbers, other_features), 1)
+	data = np.concatenate((labels, look_back_dates(dates_as_numbers, day_averages), other_features), 1)
 
 	# interpolate
 	dff = pd.DataFrame(data)
@@ -96,6 +96,28 @@ def get_date_totals(data, labels, num_unique_days=78):
 		else:
 			print('THIS LABEL IS NOT BINARY')
 	return sums
+
+def look_back_dates(day_as_numbers, day_averages, look_back=4):
+	'''how many times the days in the past to consider
+	day_as_numbers is a vector of numbers (formerly dates that were mapped to get numbers)
+	day_averages is the average for each day
+	returns a matrix of n x look_back, n being the number of training examples. This matrix will be used as synthetic features
+	'''
+	past_days = np.zeros((len(day_as_numbers), look_back))
+	for index, day_number in enumerate(day_as_numbers):
+		# TODO: EXTEND THIS TO MORE THAN 4 DAYS
+		# it's too late to work through generalizing this.
+		if day_number == 0:
+			past_days[index, :] = np.array([day_averages[0], day_averages[0], day_averages[0], day_averages[0]])
+		elif day_number == 1:
+			past_days[index, :] = np.concatenate((np.array([day_averages[0], day_averages[0], day_averages[0]]), day_averages[0:1]))
+		elif day_number == 2:
+			past_days[index, :] = np.concatenate((np.array([day_averages[0], day_averages[0]]), day_averages[0:2]))
+		elif day_number == 3:
+			past_days[index, :] = np.concatenate((np.array([day_averages[0]]), day_averages[0:3]))
+		else:
+			past_days[index, :] = day_averages[day_number - 4:day_number]
+	return past_days
 
 def map_to_matrix(iterable):
 	'''
