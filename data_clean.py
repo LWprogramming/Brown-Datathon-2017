@@ -4,6 +4,7 @@ import pandas as pd
 import os
 from collections import Counter
 from sklearn.preprocessing import MinMaxScaler
+from datetime import datetime
 
 def get_data_path():
 	'''
@@ -47,9 +48,14 @@ def clean_data():
 	# set leftmost column to the labels.
 	data = np.concatenate((np.reshape(labels_column, (num_examples, 1)), data), 1)
 
-	# remove user id and the date.
-	# TODO: try to incorporate the date somehow as a feature.
-	data = np.concatenate((np.reshape(data[:, 0], (num_examples, 1)), data[:, 3:]), 1)
+	# remove user id; add some features based on the level of activity in the
+	# past few days.
+	look_back = 5 # how many days back to consider
+	labels = np.reshape(data[:, 0], (num_examples, 1))
+	dates = data[:, 2]
+	other_features = data[:, 3:]
+
+	data = np.concatenate(labels, other_features), 1)
 
 	# interpolate
 	dff = pd.DataFrame(data)
@@ -59,6 +65,10 @@ def clean_data():
 	scaler = MinMaxScaler(feature_range=(0, 1))
 	dff = scaler.fit_transform(dff)
 	return dff
+
+def date_to_number(date_string):
+	'''maps a date to a number, mapping a date to the number of days between itself at Nov. 1, 2016.'''
+	return (date_string - date(2016, 11, 1)).days
 
 def map_to_matrix(iterable):
 	'''
