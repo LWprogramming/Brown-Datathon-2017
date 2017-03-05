@@ -12,7 +12,7 @@ if __name__ == '__main__':
     labels = data[:, 0]
     features = data[:, 1:]
 
-    # cv is about 0.77
+    # cv is about 0.69
     # gnb = GaussianNB()
     # scores = cross_val_score(gnb, features, labels, cv=5)
     # print(np.mean(scores))
@@ -26,5 +26,3 @@ if __name__ == '__main__':
     # clf = LogisticRegression(solver='lbfgs', multi_class='multinomial')
     # scores = cross_val_score(clf, features, labels, cv=5)
     # print(np.mean(scores))
-
-    
